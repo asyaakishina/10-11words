@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Игра: Английские слова 10-11 класс</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Nunito', 'Comic Sans MS', cursive;
+      background: linear-gradient(120deg, #ff9a9e, #fad0c4, #ffecd2, #cfd9df, #c3cfe2, #a1c4fd, #c2e9fb, #d4fc79, #96e6a1, #fbc2eb);
+      background-size: 300% 300%;
+      animation: gradient 20s ease infinite;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 36px;
+      color: #111;
+    }
+    .word {
+      font-size: 32px;
+      margin: 40px 0;
+      color: #000;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    button {
+      padding: 20px;
+      font-size: 24px;
+      border: none;
+      border-radius: 25px;
+      background: #96e6a1;
+      color: #222;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #6a11cb;
+      color: white;
+      transform: scale(1.08);
+    }
+    .result {
+      margin-top: 40px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #222;
+    }
+    .btn-restart {
+      background: #ff6b6b;
+      margin-top: 35px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Advanced English (10–11 класс)</h1>
+    <p>Найди точный перевод:</p>
+    <div id="game">
+      <div class="word" id="word"></div>
+      <div class="options" id="options"></div>
+      <div class="result" id="result"></div>
+      <button class="btn-restart" onclick="restart()">🔁 Пройти снова</button>
+    </div>
+  </div>
+
+  <script>
+    const words = [
+      { en: "phenomenon", ru: "явление" },
+      { en: "analysis", ru: "анализ" },
+      { en: "consequence", ru: "последствие" },
+      { en: "perspective", ru: "перспектива" },
+      { en: "priority", ru: "приоритет" },
+      { en: "strategy", ru: "стратегия" },
+      { en: "criticism", ru: "критика" },
+      { en: "evidence", ru: "доказательство" },
+      { en: "justice", ru: "справедливость" },
+      { en: "equality", ru: "равенство" },
+      { en: "freedom", ru: "свобода" },
+      { en: "identity", ru: "идентичность" },
+      { en: "reputation", ru: "репутация" },
+      { en: "influence", ru: "влияние" },
+      { en: "conflict", ru: "конфликт" },
+      { en: "resolution", ru: "решение (проблемы)" },
+      { en: "development", ru: "развитие" },
+      { en: "innovation", ru: "инновация" },
+      { en: "sustainability", ru: "устойчивость" },
+      { en: "globalization", ru: "глобализация" }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let shuffledWords = [];
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function startGame() {
+      shuffledWords = shuffle([...words]);
+      currentIndex = 0;
+      score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = shuffledWords[currentIndex];
+      document.getElementById("word").textContent = q.en;
+      const options = [q.ru];
+      while (options.length < 4) {
+        const random = words[Math.floor(Math.random() * words.length)].ru;
+        if (!options.includes(random)) options.push(random);
+      }
+      const shuffledOptions = shuffle(options);
+      const optionsEl = document.getElementById("options");
+      optionsEl.innerHTML = "";
+      shuffledOptions.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(opt === q.ru);
+        optionsEl.appendChild(btn);
+      });
+      document.getElementById("result").textContent = "";
+    }
+
+    function checkAnswer(isCorrect) {
+      if (isCorrect) score++;
+      currentIndex++;
+      if (currentIndex < shuffledWords.length) {
+        setTimeout(showQuestion, 800);
+      } else {
+        document.getElementById("result").textContent = `Ты гений! Результат: ${score}/${words.length}`;
+      }
+    }
+
+    function restart() {
+      startGame();
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
