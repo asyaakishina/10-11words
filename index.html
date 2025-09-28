@@ -108,28 +108,35 @@
 
     let currentIndex = 0;
     let score = 0;
+    let mistakes = 0; // Счётчик ошибок
     let shuffledWords = [];
 
     function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+      return [...array].sort(() => Math.random() - 0.5);
     }
 
     function startGame() {
-      shuffledWords = shuffle([...words]);
+      shuffledWords = shuffle(words); // Каждое слово — один раз
       currentIndex = 0;
       score = 0;
+      mistakes = 0;
       showQuestion();
     }
 
     function showQuestion() {
       const q = shuffledWords[currentIndex];
       document.getElementById("word").textContent = q.en;
-      const options = [q.ru];
-      while (options.length < 4) {
-        const random = words[Math.floor(Math.random() * words.length)].ru;
-        if (!options.includes(random)) options.push(random);
-      }
+
+      // Собираем 3 неправильных варианта из других слов (без дублирования)
+      const otherTranslations = words
+        .filter(w => w.ru !== q.ru)
+        .map(w => w.ru);
+      
+      // Перемешиваем и берём 3
+      const wrongOptions = shuffle(otherTranslations).slice(0, 3);
+      const options = [q.ru, ...wrongOptions];
       const shuffledOptions = shuffle(options);
+
       const optionsEl = document.getElementById("options");
       optionsEl.innerHTML = "";
       shuffledOptions.forEach(opt => {
@@ -138,16 +145,25 @@
         btn.onclick = () => checkAnswer(opt === q.ru);
         optionsEl.appendChild(btn);
       });
+
       document.getElementById("result").textContent = "";
     }
 
     function checkAnswer(isCorrect) {
-      if (isCorrect) score++;
+      if (isCorrect) {
+        score++;
+      } else {
+        mistakes++;
+      }
+
       currentIndex++;
+
       if (currentIndex < shuffledWords.length) {
         setTimeout(showQuestion, 800);
       } else {
-        document.getElementById("result").textContent = `Ты гений! Результат: ${score}/${words.length}`;
+        // Показываем финальное табло
+        document.getElementById("result").textContent = 
+          `✅ Правильно: ${score} / ❌ Ошибок: ${mistakes}`;
       }
     }
 
